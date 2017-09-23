@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" href="julia.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.16.3/math.js" type="text/javascript"></script>
+        <script src="julia.js" defer></script>
+    </head>
+    <body>
+        <div id="titleOuter" class="title">
+            <h2 class="padding">Julia Set Fractal Generator</h2>
+        </div>
+
+
+        <div id="canvasOuter" class="center">
+            <div id="canvasContainer">
+                <canvas id="juliaCanvas"
+                style="border:5px solid #AAAAAA;">
+                Your browser does not support the canvas element.
+                </canvas>
+            </div>
+        </div>
+        <div class="variables">
+            <div class="textbox">
+                <h3>Change these settings to change the fractal output (button stays blue while fractal is generating):</h3>
+                <span>C1: <input type="text" id="CReal">    </span>
+                <span>C2: <input type="text" id="CImag">    </span>
+                <span>N: <input type="text" id="nVal">    </span>
+                <span><button type="button" onclick="juliaStart();">Generate Fractal</button>    </span>
+                <span><a id="downloadCanvas"><strong>Download as image</strong></a></span>
+            </div>
+            <div class="slidecontainer">
+                <p>Red Value: <span id="redValText"></span></p>
+                <input class="slider" type="range" id="redVal" value="2" min="0" max="20">
+                <p>Green Value: <span id="greenValText"></span></p>
+                <input class="slider" type="range" id="greenVal" value="4" min="0" max="20">
+                <p>Blue Value: <span id="blueValText"></span></p>
+                <input class="slider" type="range" id="blueVal" value="6" min="0" max="20">
+                <p>Zoom Value: <span id="zoomValueText"></span></p>
+                <input class="slider" type="range" id="zoomValue" value="1" min="1" max="20">
+            </div>
+        </div>
+    </body>
+</html>
