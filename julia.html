@@ -3,6 +3,7 @@
     <head>
         <link rel="stylesheet" type="text/css" href="julia.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.16.3/math.js" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.0.4/jscolor.js" type="text/javascript"></script>
         <script src="julia.js" defer></script>
     </head>
     <body>
@@ -22,21 +23,35 @@
         <div class="variables">
             <div class="textbox">
                 <h3>Change these settings to change the fractal output (button stays blue while fractal is generating):</h3>
-                <span>C1: <input type="text" id="CReal">    </span>
-                <span>C2: <input type="text" id="CImag">    </span>
-                <span>N: <input type="text" id="nVal">    </span>
+                <span>C1: <input type="text" id="CReal"></span>
+                <span>C2: <input type="text" id="CImag"></span>
+                <span>N: <input type="text" id="nVal"></span>
                 <span><button type="button" onclick="juliaStart();">Generate Fractal</button>    </span>
                 <span><a id="downloadCanvas"><strong>Download as image</strong></a></span>
             </div>
             <div class="slidecontainer">
-                <p>Red Value: <span id="redValText"></span></p>
+                <!-- <p>Red Value: <span id="redValText"></span></p>
                 <input class="slider" type="range" id="redVal" value="2" min="0" max="20">
                 <p>Green Value: <span id="greenValText"></span></p>
                 <input class="slider" type="range" id="greenVal" value="4" min="0" max="20">
                 <p>Blue Value: <span id="blueValText"></span></p>
-                <input class="slider" type="range" id="blueVal" value="6" min="0" max="20">
+                <input class="slider" type="range" id="blueVal" value="6" min="0" max="20"> -->
+                <div class="textbox">
+                    <span><strong>Outer Color</strong></span>
+                    <input id="color1" value="000764" class="jscolor {width:243, height:150, position:'right',
+                    borderColor:'#FFF', insetColor:'#FFF', backgroundColor:'#666'} colorpicker">
+                    <input id="color2" value="206bcb" class="jscolor {width:243, height:150, position:'right',
+                    borderColor:'#FFF', insetColor:'#FFF', backgroundColor:'#666'} colorpicker">
+                    <input id="color3" value="edffff" class="jscolor {width:243, height:150, position:'right',
+                    borderColor:'#FFF', insetColor:'#FFF', backgroundColor:'#666'} colorpicker">
+                    <input id="color4" value="ffaa00" class="jscolor {width:243, height:150, position:'right',
+                    borderColor:'#FFF', insetColor:'#FFF', backgroundColor:'#666'} colorpicker">
+                    <input id="color5" value="000200" class="jscolor {width:243, height:150, position:'right',
+                    borderColor:'#FFF', insetColor:'#FFF', backgroundColor:'#666'} colorpicker">
+                    <span><strong>Inner Color</strong></span>
+                </div>
                 <p>Zoom Value: <span id="zoomValueText"></span></p>
-                <input class="slider" type="range" id="zoomValue" value="1" min="1" max="20">
+                <input class="slider" type="range" id="zoomValue" value="1" min="1" max="100">
             </div>
         </div>
     </body>

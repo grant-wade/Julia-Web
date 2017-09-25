@@ -9,28 +9,11 @@ window.onload = window.onresize = function() {
     canvas.height = canvDiv.offsetHeight * 0.95;
 }
 
-// Get all slider elements
-var sliderRed = document.getElementById('redVal');
-var sliderGreen = document.getElementById('greenVal');
-var sliderBlue = document.getElementById('blueVal');
+
+// Zoom slider control
 var sliderZoom = document.getElementById('zoomValue');
-
-// Get all slider text fields
-var outputRed = document.getElementById('redValText');
-var outputGreen = document.getElementById('greenValText');
-var outputBlue = document.getElementById('blueValText');
 var zoomText = document.getElementById('zoomValueText');
-
-// Put the start value in the text field
-outputRed.innerHTML = 2;
-outputGreen.innerHTML = 4;
-outputBlue.innerHTML = 6;
 zoomText.innerHTML = 1;
-
-// Change slider text value when slider moves
-sliderRed.oninput = function() { outputRed.innerHTML = this.value; }
-sliderGreen.oninput = function() { outputGreen.innerHTML = this.value; }
-sliderBlue.oninput = function() { outputBlue.innerHTML = this.value; }
 sliderZoom.oninput = function() { zoomText.innerHTML = this.value; }
 
 
@@ -54,33 +37,78 @@ document.getElementById('downloadCanvas').addEventListener('click', function() {
 }, false);
 
 
-// Credit to github user lrvick
-RGBToHex = function(r,g,b){
-    var bin = r << 16 | g << 8 | b;
-    return (function(h){
-        return new Array(7-h.length).join("0")+h
-    })(bin.toString(16).toUpperCase())
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
 }
 
-// Create color range for escape values
-function createColorRange(r, g, b, n) {
-    var colorRange = [];
-    var scale = 1;
-    if (r * n > 255 && r > g && r > b) {
-        scale = (r * n) / 255;
-    } else if (g * n > 255 && g > r && g > b) {
-        scale = (g * n) / 255;
-    } else if (b * n > 255 && b > r && b > g) {
-        scale = (b * n) / 255;
-    }
-    r = r / scale;
-    g = g / scale;
-    b = b / scale;
-    for (var i = 0; i < n; i++) {
-        colorRange[i] = RGBToHex(r * i, g * i, b * i);
-    }
-    return colorRange;
+function RGBToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
 }
+
+
+function hexToRGB(hex) {
+    // Expand shorthand form (e.g. "03F") to full form (e.g. "0033FF")
+    var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+    hex = hex.replace(shorthandRegex, function(m, r, g, b) {
+        return r + r + g + g + b + b;
+    });
+
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? [
+        parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16)
+    ] : null;
+}
+
+// generate a color gradient from two colors
+function generateColor(start, end, colorCount){
+
+    // The number of colors to compute
+    var len = colorCount;
+
+    //Alpha blending amount
+    var alpha = 0.0;
+
+    // color storage warehouse
+    var gradient = [];
+    
+    for (i = 0; i < len; i++) {
+        var c = [];
+        alpha += (1.0/len);
+        c[0] = parseInt(start[0] * (1 - alpha) + alpha * end[0]);
+        c[1] = parseInt(start[1] * (1 - alpha) + alpha * end[1]);
+        c[2] = parseInt(start[2] * (1 - alpha) + alpha * end[2]);
+        gradient.push(RGBToHex(c[0], c[1], c[2]));
+    }
+    return gradient;
+}
+
+// Create a color gradient from color sets
+function createColorGradient(baseColors, n) {
+    var finishedColorGrad = [];
+    var nSplit = parseInt((n / baseColors.length) + (n % baseColors.length));
+    console.log(nSplit);
+
+    for (var i = 0; i < baseColors.length - 1; i++) {
+        var red = baseColors[i][0];
+        var green = baseColors[i][1];
+        var blue = baseColors[i][2];
+        var startColor = [red, green, blue];
+
+        var nextRed = baseColors[i + 1][0];
+        var nextGreen = baseColors[i + 1][1];
+        var nextBlue = baseColors[i + 1][2];
+        var endColor = [nextRed, nextGreen, nextBlue];
+
+        // Get gradient colors and add them to final gradient
+        var gradient = generateColor(startColor, endColor, nSplit);
+        for (color in gradient) { finishedColorGrad.push(gradient[color]); }
+    }
+    return finishedColorGrad;
+}
+
 
 // Julia set functions
 function inJSet(z, c, n) {
@@ -95,9 +123,9 @@ function inJSet(z, c, n) {
 }
 
 function scale(pix, pixNum, floatMin, floatMax) {
-    var pixLocation = pix / pixNum
-    var floatMag = math.abs(floatMin) + math.abs(floatMax)
-    return (pixLocation * floatMag) + floatMin
+    var pixLocation = pix / pixNum;
+    var floatMag = math.abs(floatMin) + math.abs(floatMax);
+    return (pixLocation * floatMag) + floatMin;
 }
 
 function juliaStart() {
@@ -134,8 +162,15 @@ function juliaStart() {
     // Get n value
     var n = document.getElementById('nVal');
 
-    // Create all colors possible in the range
-    var colors = createColorRange(sliderRed.value, sliderGreen.value, sliderBlue.value, n.value);
+    // Get colors and create a color gradient
+    var black1 = hexToRGB("000000")
+    var color1 = hexToRGB(document.getElementById('color1').value);
+    var color2 = hexToRGB(document.getElementById('color2').value);
+    var color3 = hexToRGB(document.getElementById('color3').value);
+    var color4 = hexToRGB(document.getElementById('color4').value);
+    var color5 = hexToRGB(document.getElementById('color5').value);
+    const baseColors = [black1, color1, color2, color3, color4, color5];
+    var colors = createColorGradient(baseColors, n.value);
 
     // Begin event loop
     for (var col = 0; col < height; col++) {
@@ -145,7 +180,7 @@ function juliaStart() {
             var z = math.complex(x, y)
             var check = inJSet(z, c, n.value);
             if (check != 0) {
-                ctx.fillStyle = "#" + colors[check];
+                ctx.fillStyle = colors[check];
                 ctx.fillRect(row, col, 1, 1);
             } else {
                 ctx.fillStyle = "#000000";
@@ -153,5 +188,4 @@ function juliaStart() {
             }
         }
     }
-    console.log("Finished");
 }

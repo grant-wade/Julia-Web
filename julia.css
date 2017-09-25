@@ -12,8 +12,15 @@ body {
     letter-spacing: 1px;
 }
 
-.padding {
-    padding: .5em;   
+h2.padding {
+    padding: .5em;
+}
+
+.colorpicker {
+    padding: .5em;
+    text-align: center;
+    font-size: 12px;
+    border: 2px solid grey;
 }
 
 
@@ -82,7 +89,7 @@ div.slidecontainer {
 
 .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    appearance: none;
+    /* appearance: none; */
     width: 25px;
     height: 25px;
     background: #4CAF50;
