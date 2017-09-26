@@ -89,7 +89,6 @@ function generateColor(start, end, colorCount){
 function createColorGradient(baseColors, n) {
     var finishedColorGrad = [];
     var nSplit = parseInt((n / baseColors.length) + (n % baseColors.length));
-    console.log(nSplit);
 
     for (var i = 0; i < baseColors.length - 1; i++) {
         var red = baseColors[i][0];
@@ -142,7 +141,7 @@ function juliaStart() {
     var aspect = width / height;
 
     // Zoom value
-    var zoom = 1 / sliderZoom.value;
+    var zoom = 1 / (sliderZoom.value / 10);
 
     // chnage XY plane dimmensions to fit canvas aspect ratio
     if (aspect > 1) {totalWidth *= aspect;}
@@ -159,6 +158,15 @@ function juliaStart() {
     var cImag = document.getElementById('CImag');
     var c = math.complex(parseFloat(cReal.value), parseFloat(cImag.value));
 
+    var xVals = [];
+    var yVals = [];
+    for (var i = 0; i < height; i++) {
+        xVals.push(scale(i, height, negHeight, posHeight));
+    }
+    for (var i = 0; i < width; i++) {
+        yVals.push(scale(i, width, negWidth, posWidth));
+    }
+    
     // Get n value
     var n = document.getElementById('nVal');
 
@@ -174,9 +182,11 @@ function juliaStart() {
 
     // Begin event loop
     for (var col = 0; col < height; col++) {
-        var x = scale(col, height, negHeight, posHeight)
+        // var x = scale(col, height, negHeight, posHeight)
+        var x  = xVals[col];
         for (var row = 0; row < width; row++) {
-            var y = scale(row, width, negWidth, posWidth);
+            // var y = scale(row, width, negWidth, posWidth);
+            var y = yVals[row];
             var z = math.complex(x, y)
             var check = inJSet(z, c, n.value);
             if (check != 0) {
