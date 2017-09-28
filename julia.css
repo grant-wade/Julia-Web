@@ -102,3 +102,10 @@ div.slidecontainer {
     background: #4CAF50;
     cursor: pointer;
 }
+
+footer {
+    padding-top: .25em;
+    padding-bottom: .25em;
+    color: lightgrey;
+    text-align: center;
+}
