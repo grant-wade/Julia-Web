@@ -140,12 +140,16 @@ function juliaStart() {
     var height = canvas.height;
     var aspect = width / height;
 
+    // Set aspect ratio
+    totalWidth *= aspect;
+
     // Zoom value
     var zoom = 1 / (sliderZoom.value / 10);
 
     // chnage XY plane dimmensions to fit canvas aspect ratio
-    if (aspect > 1) {totalWidth *= aspect;}
-    else if (aspect < 1) {totalHeight *= aspect;}
+    // if (aspect > 1) {totalWidth *= aspect;}
+    // else if (aspect < 1) {totalWidth *= aspect;}
+    
     
     // Get new XY plane dimmensions
     var negWidth = -(totalWidth / 2) * zoom;
