@@ -177,8 +177,8 @@ function juliaStart() {
     var color3 = hexToRGB(document.getElementById('color3').value);
     var color4 = hexToRGB(document.getElementById('color4').value);
     var color5 = hexToRGB(document.getElementById('color5').value);
-    const baseColors = [black1, color1, color2, color3, color4, color5];
-    var colors = createColorGradient(baseColors, n.value);
+    var baseColors = [black1, color1, color2, color3, color4, color5];
+    const colors = createColorGradient(baseColors, n.value);
 
     // Begin event loop
     for (var col = 0; col < height; col++) {
