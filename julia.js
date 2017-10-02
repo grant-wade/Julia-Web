@@ -3,17 +3,17 @@
 window.onload = window.onresize = function() {
     var canvas = document.getElementById('juliaCanvas');
     var canvDiv = document.getElementById('canvasOuter');
-    canvDiv.style.width = window.innerWidth * 0.8 + 'px';
-    canvDiv.style.height = window.innerHeight * 0.8 + 'px';
+    canvDiv.style.width = window.innerWidth * 0.85 + 'px';
+    canvDiv.style.height = window.innerHeight * 0.88 + 'px';
     canvas.width = canvDiv.offsetWidth * 0.95;
-    canvas.height = canvDiv.offsetHeight * 0.95;
+    canvas.height = canvDiv.offsetHeight * 0.90;
 }
 
 
 // Zoom slider control
 var sliderZoom = document.getElementById('zoomValue');
 var zoomText = document.getElementById('zoomValueText');
-zoomText.innerHTML = 1;
+zoomText.innerHTML = 10;
 sliderZoom.oninput = function() { zoomText.innerHTML = this.value; }
 
 
@@ -109,23 +109,18 @@ function createColorGradient(baseColors, n) {
 }
 
 
-// Julia set functions
-function inJSet(z, c, n) {
-    for (var i = 0; i < n; i++) {
-        z = math.multiply(z, z);
-        z = math.add(z, c);
-        if (math.abs(z) > 2) {
-            return i;
+function writeToCanvas(ctx, numbers, colors) {
+    var colLen = numbers.length;
+    var rowLen = numbers[0].length;
+    for (var col = 0; col < colLen; col++) {
+        for (var row = 0; row < rowLen; row++) {
+            ctx.fillStyle = colors[numbers[col][row]]
+            ctx.fillRect(row, col, 1, 1);
         }
     }
-    return 0;
+    console.log("finished")
 }
 
-function scale(pix, pixNum, floatMin, floatMax) {
-    var pixLocation = pix / pixNum;
-    var floatMag = math.abs(floatMin) + math.abs(floatMax);
-    return (pixLocation * floatMag) + floatMin;
-}
 
 function juliaStart() {
     var canvas = document.getElementById('juliaCanvas');
@@ -146,59 +141,42 @@ function juliaStart() {
     // Zoom value
     var zoom = 1 / (sliderZoom.value / 10);
 
-    // chnage XY plane dimmensions to fit canvas aspect ratio
-    // if (aspect > 1) {totalWidth *= aspect;}
-    // else if (aspect < 1) {totalWidth *= aspect;}
-    
-    
-    // Get new XY plane dimmensions
-    var negWidth = -(totalWidth / 2) * zoom;
-    var posWidth = (totalWidth / 2) * zoom;
-    var negHeight = -(totalHeight / 2) * zoom;
-    var posHeight = (totalHeight / 2) * zoom;
-
     // Create the C value for the equation
-    var cReal = document.getElementById('CReal');
-    var cImag = document.getElementById('CImag');
-    var c = math.complex(parseFloat(cReal.value), parseFloat(cImag.value));
-
-    var xVals = [];
-    var yVals = [];
-    for (var i = 0; i < height; i++) {
-        xVals.push(scale(i, height, negHeight, posHeight));
-    }
-    for (var i = 0; i < width; i++) {
-        yVals.push(scale(i, width, negWidth, posWidth));
-    }
+    var cReal = parseFloat(document.getElementById('CReal').value);
+    var cImag = parseFloat(document.getElementById('CImag').value);
     
     // Get n value
-    var n = document.getElementById('nVal');
+    var n = document.getElementById('nVal').value;
 
     // Get colors and create a color gradient
-    var black1 = hexToRGB("000000")
+    var color0 = hexToRGB(document.getElementById('color0').value);
     var color1 = hexToRGB(document.getElementById('color1').value);
     var color2 = hexToRGB(document.getElementById('color2').value);
     var color3 = hexToRGB(document.getElementById('color3').value);
     var color4 = hexToRGB(document.getElementById('color4').value);
     var color5 = hexToRGB(document.getElementById('color5').value);
-    var baseColors = [black1, color1, color2, color3, color4, color5];
-    const colors = createColorGradient(baseColors, n.value);
+    var baseColors = [color0, color1, color2, color3, color4, color5];
+    var colors = createColorGradient(baseColors, n);
 
-    // Begin event loop
-    for (var col = 0; col < height; col++) {
-        // var x = scale(col, height, negHeight, posHeight)
-        var x  = xVals[col];
-        for (var row = 0; row < width; row++) {
-            // var y = scale(row, width, negWidth, posWidth);
-            var y = yVals[row];
-            var z = math.complex(x, y)
-            var check = inJSet(z, c, n.value);
-            if (check != 0) {
-                ctx.fillStyle = colors[check];
-                ctx.fillRect(row, col, 1, 1);
-            } else {
-                ctx.fillStyle = "#000000";
-                ctx.fillRect(row, col, 1, 1);
+    var juliaWorker = new Worker('./julia-worker.js');
+    var output = [];
+
+    juliaWorker.postMessage([width, height, cReal, cImag, n, totalWidth, totalHeight, zoom])
+
+    juliaWorker.onmessage = function(e) {
+        var data = e.data[0];
+        if (data === parseInt(data, 10)) {
+            var elem = document.getElementById("myBar");
+            elem.style.width = String(e.data[0]) + '%';
+            return;
+        } else {
+            output = e.data[0];
+            juliaWorker.terminate();
+            for (var col = 0; col < height; col++) {
+                for (var row = 0; row < width; row++) {
+                    ctx.fillStyle = colors[output[col][row]]
+                    ctx.fillRect(row, col, 1, 1);
+                }
             }
         }
     }
